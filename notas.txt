@@ -1,0 +1,66 @@
+Este proyecto va a ser un editor simple de hoja de personaje.
+Pasos:
+	Crear una carpeta llamada PJs
+	Ciclar la carpeta en busqueda de archivos txt que van a ser los personajes
+	Dar la opcion de elegir uno de estos personajes
+	
+	Algo asi:
+		Personajes encontrados:
+			-1  Pirulete
+			-2  Claudio
+			-3  Jorge
+			-4 [name]
+			-0  Agregar Nuevo
+			
+	Se elige un numero:
+		3
+		Haz elegido el personaje 'Jorge'
+		-1  Ver	
+		-2  Editar
+		-3  Eliminar
+		-0  Atras
+		
+			
+Forma de almacenar los personajes:
+{nombre:'pepe', 
+raza: 'elfo 2'
+exp:{expUsada: 40, xpDisponible: 31}
+notas: 'bla bla bla',
+notasEspeciales: 'ulala French sir',
+habilidades:{Tiro con arco: 
+	{statUsada: 2(significa agilidad), nivel: 2, bonusTirado:0, bonusGuardado:0, bonusTotal:0}, prestidigitacion: {},
+},
+stats: {fuerza: 2, agilidad:3, bravura: 3},
+hechizos: {alivio:{tirada:3k4, descripcion:'esto bla bla'}, otroHechizo: },
+tecnicas: {hechiceroArcano: 'Descripcion'},
+inventario: ['dagas 3, poco filo','piedra de afilar, 1'],
+ventajas:{mano de piedra: '3 de xp, en especial la mano izq'}
+	}
+
+{nombre:'', raza:'', exp:{}, notas:'', notasEsp:'', habilidades:{}, stats:{}, hechizos:{}, tecnicas:{}, inventario:[], ventajas:{}, }
+
+
+Para hacer:
+	Inicio del programa dice 'Bienvenido a PainKiller charactermancer by Facunchos'
+	1 - Personajes
+		(Aca caen una lista de los personajes):
+		A - Atras (Te lleva al inicio) OK
+		B - Borrar OK
+		N - Nuevo OK
+		1 - Aren
+			A - Atras
+			N - Nuevo
+			E - Editar
+			1 - Habilidades
+			2 - Hechizos
+			3 - Notas
+				A - Atras
+				B - Borrar
+				N - Nuevo
+				E - Editar
+				1 - Recordar sobre el monstruo...
+			
+	2 - Manual ( Te lleva a un link )  OK
+	3 - Hoja Excel ( Te lleva a un link ) OK
+	4 - Creditos ( Te lleva a un link ) OK
+	5 - Cafesito? ( Te lleva a un link ) OK (Crear cafesito)
