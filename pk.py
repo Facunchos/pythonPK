@@ -230,7 +230,7 @@ def editPj(pjName):
 	with open(PATH_FOLDER + pjName, 'w') as file:
 		file.write(str(pj))
 	editPj(pjName)
-
+	#Mejora: Debe haber una forma de cliclar esto, llamando a la misma funcion recursivamente
 
 def modificarString(info):
 	print('Modificando: ', info )
