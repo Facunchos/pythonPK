@@ -1,10 +1,12 @@
 import os
 import numpy as np
-
+import time
 statsTuple = ('Fuerza','Agilidad','Fe','Entendimiento','Bravura','Personalidad')
 ANE = ['ATRAS','NUEVO','EDITAR']
 ABN = ['ATRAS','BORRAR','NUEVO']
 ABNE = ['ATRAS','BORRAR','NUEVO','EDITAR']
+ORDEN = ['MENU', 'SHOWPJS','PJ', 'EDITPJ' ]
+
 # https://www.geeksforgeeks.org/python-dictionary/
 PATH_FOLDER = './pjs/'
 S = '\n'
@@ -24,36 +26,73 @@ def checkForPjs():
 	checkFolder()
 	#Show all the characters avairable
 	eleccion = showPjs(ABN)
-	print('Haz elejido a : ',eleccion)
 	
 	if eleccion == 'ATRAS':
-		menu()
+		opciones(eleccion, ORDEN[0])
 	elif eleccion == 'BORRAR':
 		seguro = input('ESTAS SEGURO? y/any \n')
 		if seguro.lower() == 'y':
 			delPj()
+		else:
+			checkForPjs()
 	elif eleccion == 'NUEVO':
 		addPj()
 	else:
-		"""
-		file = open(PATH_FOLDER+personajeElegido)
-		print(file.read())
-		file.close()
-		"""
-		#showAndChoose( ['STATS','HABILIDADES','HECHIZOS','NOTAS','NOTAS ESP','TECNICAS','VENTAJAS'], ANE)
-		showPj(eleccion)
-		#Agregar opciones
+		print('Haz elejido a : ',eleccion)
+		showPjInfo(eleccion)
 		
 	# Hacer una funcion aparte para esto
-def showPj(pj):
-	opciones = []
-	with open(PATH_FOLDER + pj, 'r') as file:
-		personaje = file.readlines()
-		#	print(personaje['name'], S)
-		for i in personaje:
-			print(personaje[i], S)
-			#print(personaje[i])
 
+def showPjInfo(pjName):
+	pj = getPj(pjName)
+	claves = getPjKeys(pjName)
+	elegido = showAndChoose(claves, ANE)
+	if elegido not in ABNE:
+		#Shows the info of the key choosed
+		print(pj[elegido])
+		time.sleep(3)
+		#And then shows all the keys again
+		showPjInfo(pjName)
+	else:
+		#If 'ATRAS' send ORDEN
+		opciones(elegido, ORDEN[1], pjName)
+		
+def opciones(el, orden = None, pjName = None):
+	print('orden', orden, 'pjName', pjName)
+	if el == 'ATRAS':
+		atras(orden, pjName)
+	elif el == 'BORRAR':
+		print('')
+	elif el == 'NUEVO':
+		print('')
+	elif el == 'EDITAR':
+		editPj(pjName)
+		print('')
+		
+
+def atras(orden, pjName = None):
+	if orden == ORDEN[0]:
+		menu()
+	elif orden == ORDEN[1]:
+		checkForPjs()
+	elif orden == ORDEN[2]:
+		showPjInfo(pjName)
+	elif orden == ORDEN[3]:
+		print('')
+	
+
+def getPj(pjName):
+	personaje = {}
+	with open(PATH_FOLDER + pjName) as file:
+		#eval() reads the file content and returns an array
+		personaje = eval(file.read())
+
+	return personaje
+	
+def getPjKeys(pjName):
+	pj = getPj(pjName)		
+	return list(pj.keys())
+	
 
 #Print a link
 def link(uri, label=None):
@@ -69,25 +108,12 @@ def link(uri, label=None):
 
 def menu():
 	#Only 'Personajes' has more options, the rest is a link
-	inicio = ['Personajes', 'Manual','Hoja Excel','Creditos','Cafesito', 'Refresh']
+	links = {'Manual': 'https://drive.google.com/drive/u/0/folders/1cLwQJNBNFOMCxDp7t_fC4DHqz9kdyJUA', 'Hoja Excel':'https://docs.google.com/spreadsheets/d/1CA0mS23IgUdEZ-WnBhtf66BKSf_Mvkb83Yp-YzjG7uQ/edit#gid=2043668604', 'Creditos': 'Creado por Facundo Martinez (Facunchos) En 2024 \n Linkedin: \n https://www.linkedin.com/in/facunmartinez/ \n GitHub: \n https://github.com/Facunchos', 'Cafesito': 'Hacerme cuenta de Cafesito!',  }
+	inicio = ['Personajes', 'Manual' ,'Hoja Excel','Creditos','Cafesito', 'Refresh']
+	
 	elegido = showAndChoose(inicio)
-	
-	
-	if elegido == 'Manual':
-		print(link('https://drive.google.com/drive/u/0/folders/1cLwQJNBNFOMCxDp7t_fC4DHqz9kdyJUA'))
-		menu()
-	elif elegido == 'Hoja Excel':
-		print(link('https://docs.google.com/spreadsheets/d/1CA0mS23IgUdEZ-WnBhtf66BKSf_Mvkb83Yp-YzjG7uQ/edit#gid=2043668604'))
-		menu()
-	elif elegido == 'Creditos':
-		print('Creado por Facundo Martinez (Facunchos) En 2024')
-		print('Linkedin: ')
-		print(link('https://www.linkedin.com/in/facunmartinez/'))
-		print('GitHub: ')
-		print(link('https://github.com/Facunchos'))
-		menu()
-	elif elegido == 'Cafesito':
-		print('Hacerme cuenta de Cafesito!')
+	if elegido in links.keys():
+		print(links[elegido])
 		menu()
 	elif elegido == 'Personajes':
 		checkForPjs()
@@ -172,6 +198,50 @@ def addHabilidad():
 	return habilidad
 
 
+def editPj(pjName):
+	pj = getPj(pjName)
+	claves = getPjKeys(pjName)
+	print('Que quieres modificar?')
+	primer = showAndChoose(claves, ['ATRAS'])
+	if primer == 'ATRAS':
+		opciones(primer, ORDEN[2], pjName)
+		
+	# If not dict, edit. If dict, ask again what
+	if not isinstance(pj[primer], dict):
+		pj[primer] = modificarString(pj[primer])
+	else:
+		primerList = list(pj[primer])
+		for i in primerList:
+			print(i, '  ', pj[primer][i], S )
+		segundo = showAndChoose(primerList)
+		
+		#Is a Dict inside a Dict? Loop again
+		if not isinstance(pj[primer][segundo], dict):
+			pj[primer][segundo] = modificarString(pj[primer][segundo])
+		else:
+			segunList = list(pj[primer][segundo])
+			for i in segunList:
+				print(i, '  ', pj[primer][segundo][i], S )
+			tercer = showAndChoose(segunList)
+			
+			if not isinstance(pj[primer][segundo][tercer], dict):
+				pj[primer][segundo][tercer] = modificarString(pj[primer][segundo][tercer])
+	
+	with open(PATH_FOLDER + pjName, 'w') as file:
+		file.write(str(pj))
+	editPj(pjName)
+
+
+def modificarString(info):
+	print('Modificando: ', info )
+	nuevoInput = input('Ingrese nuevo valor: \n')
+	print('Valor anterior: ', info)			  	
+	print('Valor Nuevo: ', nuevoInput )
+	return nuevoInput
+		
+	
+	
+
 def addPj():
 	nombre = input('Elija el nombre del personaje: ')
 	#Set Dictionaries
@@ -238,7 +308,7 @@ def delPj():
 	print('Cual deseas BORRAR?: ')
 	eleccion = showPjs(['ATRAS'])
 	if eleccion == 'ATRAS':
-		start()	
+		opciones(eleccion, ORDEN[1])	
 	else:
 		path = PATH_FOLDER + eleccion
 		if os.path.exists(path):
@@ -248,7 +318,6 @@ def delPj():
 			print("The file does not exist") 
 	start()
 		
-#def editPj():
 def refresh():
 	#os.system("gnome-terminal -e 'bash -c \"python3 pk.py; bash\" '")
 	os.system("gnome-terminal --command 'python3 pk.py';bash -c 'exit' ")

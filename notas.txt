@@ -48,7 +48,7 @@ Para hacer:
 		B - Borrar OK
 		N - Nuevo OK
 		1 - Aren
-			A - Atras
+			A - Atras OK
 			N - Nuevo
 			E - Editar
 			1 - Habilidades
