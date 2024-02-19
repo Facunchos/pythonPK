@@ -49,14 +49,14 @@ Para hacer:
 		N - Nuevo OK
 		1 - Aren
 			A - Atras OK
-			N - Nuevo
-			E - Editar
+			N - Nuevo OK
+			E - Editar OK
 			1 - Habilidades
 			2 - Hechizos
 			3 - Notas
 				A - Atras
 				B - Borrar
-				N - Nuevo
+				N - Nuevo NO
 				E - Editar
 				1 - Recordar sobre el monstruo...
 			
@@ -64,3 +64,6 @@ Para hacer:
 	3 - Hoja Excel ( Te lleva a un link ) OK
 	4 - Creditos ( Te lleva a un link ) OK
 	5 - Cafesito? ( Te lleva a un link ) OK (Crear cafesito)
+	
+	
+Crear opcion para mostrar

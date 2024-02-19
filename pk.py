@@ -254,8 +254,7 @@ def addNew(lista, nombre = False):
 	if nombre:
 		nombre = input('Ingrese un nombre: ')
 		res[nombre] = {}
-	for i in lista:
-		res[nombre][i] = input(f'Ingrese {i}: \n', )
+	res[nombre] = {i: input(f'Ingrese {i}: \n') for i in lista}
 	return res
 
 
@@ -286,7 +285,7 @@ def editPj(pjName):
 				print(i, '  ', pj[primer][segundo][i], S )
 			tercer = showAndChoose(segunList)
 			
-			if not isinstance(pj[primer][segundo][tercer], dict):
+			if not  (pj[primer][segundo][tercer], dict):
 				pj[primer][segundo][tercer] = modificarString(pj[primer][segundo][tercer])
 	
 	with open(PATH_FOLDER + pjName, 'w') as file:
@@ -387,7 +386,7 @@ def refreshFileName():
 		if i != name:
 			print(f'Nombre de archivo actualizado. De {i} a {name}')
 			os.rename(PATH_FOLDER+i, PATH_FOLDER+name)
-	atras(ORDEN[0])
+	#atras(ORDEN[0])
 	
 def refresh():
 	#os.system("gnome-terminal -e 'bash -c \"python3 pk.py; bash\" '")
