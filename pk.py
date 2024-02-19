@@ -18,7 +18,7 @@ def checkFolder():
 		os.makedirs('pjs')
 	return os.listdir(PATH_FOLDER)
 		
-
+#Array of files names in the pjs folder
 listPjs = checkFolder()
 #If no pjs, create the first
 def checkForPjs():
@@ -49,25 +49,27 @@ def showPjInfo(pjName):
 	elegido = showAndChoose(claves, ANE)
 	if elegido not in ABNE:
 		#Shows the info of the key choosed
-		print(pj[elegido])
+		print(pj[elegido], )
 		time.sleep(3)
 		#And then shows all the keys again
 		showPjInfo(pjName)
 	else:
 		#If 'ATRAS' send ORDEN
 		opciones(elegido, ORDEN[1], pjName)
-		
-def opciones(el, orden = None, pjName = None):
+
+#Falta hace el nuevo
+def opciones(el, orden = None, pjName = None,):
 	print('orden', orden, 'pjName', pjName)
 	if el == 'ATRAS':
 		atras(orden, pjName)
 	elif el == 'BORRAR':
 		print('')
 	elif el == 'NUEVO':
+		askNew(pjName)
 		print('')
 	elif el == 'EDITAR':
 		editPj(pjName)
-		print('')
+
 		
 
 def atras(orden, pjName = None):
@@ -78,7 +80,7 @@ def atras(orden, pjName = None):
 	elif orden == ORDEN[2]:
 		showPjInfo(pjName)
 	elif orden == ORDEN[3]:
-		print('')
+		showPjInfo(pjName)
 	
 
 def getPj(pjName):
@@ -109,7 +111,7 @@ def link(uri, label=None):
 def menu():
 	#Only 'Personajes' has more options, the rest is a link
 	links = {'Manual': 'https://drive.google.com/drive/u/0/folders/1cLwQJNBNFOMCxDp7t_fC4DHqz9kdyJUA', 'Hoja Excel':'https://docs.google.com/spreadsheets/d/1CA0mS23IgUdEZ-WnBhtf66BKSf_Mvkb83Yp-YzjG7uQ/edit#gid=2043668604', 'Creditos': 'Creado por Facundo Martinez (Facunchos) En 2024 \n Linkedin: \n https://www.linkedin.com/in/facunmartinez/ \n GitHub: \n https://github.com/Facunchos', 'Cafesito': 'Hacerme cuenta de Cafesito!',  }
-	inicio = ['Personajes', 'Manual' ,'Hoja Excel','Creditos','Cafesito', 'Refresh']
+	inicio = ['Personajes', 'Manual' ,'Hoja Excel','Creditos','Cafesito', 'Refresh', 'Refresh File names']
 	
 	elegido = showAndChoose(inicio)
 	if elegido in links.keys():
@@ -119,6 +121,8 @@ def menu():
 		checkForPjs()
 	elif elegido == 'Refresh':
 		refresh()
+	elif elegido == 'Refresh File names':
+		refreshFileName()
 	else:
 		print('Elija una opcion correcta')
 		menu()
@@ -196,6 +200,64 @@ def addHabilidad():
 	habilidad[nombre]['des'] = input('Agregue descripción: ')
 	print(habilidad)
 	return habilidad
+	
+# example addNew([Nombre, Nivel, Stat que usa, Bonus Tirado])
+# Aca le mando un array de nombres que va ciclar el for. Se le pide un nombre inicial y una carga de datos
+"""
+def askNew(pjName, ):
+	
+	pj = getPj(pjName)
+	claves = getPjKeys(pjName)
+	delet = ['name','raza','xp']
+	
+	#generates a new list containing only those elements from clave that are not present in the delet
+	clave_filtered = [key for key in claves if key not in delet]
+
+	print('Que quieres agregar?: ')	
+	elegido = showAndChoose(clave_filtered, ['ATRAS'])
+	#opciones: ['habilidades', 'hechizos', 'stats', 'notas', 'notasEsp', 'tecnicas', 'ventajas']
+
+	if elegido == 'habilidades':
+		res = addNew(['Nivel', 'Stat','BonusTirado','BonusGuardado','Bonus', 'Descripcion'], True)
+	
+	with open(PATH_FOLDER + pjName, 'r') as file:
+		char = eval(file.read())
+		print('antes',char,S,S)
+		char[elegido][res[0]]
+		print('desp',char)
+"""		
+def askNew(pjName):
+	pj = getPj(pjName)
+	claves = getPjKeys(pjName)
+	delet = ['name', 'raza', 'xp']
+	newlyAdded = False
+	# Generate a new list containing only those elements from clave that are not present in the delet
+	clave_filtered = [key for key in claves if key not in delet]
+
+	print('Que quieres agregar?: ')
+	elegido = showAndChoose(clave_filtered, ['ATRAS'])
+
+	if elegido == 'habilidades':
+		newlyAdded = addNew(['Nivel', 'Stat', 'BonusTirado', 'BonusGuardado', 'Bonus', 'Descripcion'], True)
+		
+	pj[elegido].update(newlyAdded)  # Update existing habilidades with the new one
+	
+	if newlyAdded:
+		with open(PATH_FOLDER + pjName, 'w') as file:	
+			file.write(str(pj)) 
+            
+      
+def addNew(lista, nombre = False):
+
+	#lista is a array of things to cicle
+	res = {}
+	if nombre:
+		nombre = input('Ingrese un nombre: ')
+		res[nombre] = {}
+	for i in lista:
+		res[nombre][i] = input(f'Ingrese {i}: \n', )
+	return res
+
 
 
 def editPj(pjName):
@@ -318,10 +380,21 @@ def delPj():
 			print("The file does not exist") 
 	start()
 		
+def refreshFileName():
+	pjs = os.listdir(PATH_FOLDER)
+	for i in pjs:
+		name = getPj(i)['name']
+		if i != name:
+			print(f'Nombre de archivo actualizado. De {i} a {name}')
+			os.rename(PATH_FOLDER+i, PATH_FOLDER+name)
+	atras(ORDEN[0])
+	
 def refresh():
 	#os.system("gnome-terminal -e 'bash -c \"python3 pk.py; bash\" '")
+	refreshFileName()
 	os.system("gnome-terminal --command 'python3 pk.py';bash -c 'exit' ")
-
+	
+			
 def start():
 	#Greetings
 	print('Bienvenido a PainKiller charactermancer by Facunchos')
