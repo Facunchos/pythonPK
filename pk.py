@@ -3,6 +3,7 @@ import numpy as np
 import time
 import sys
 import subprocess
+from tabulate import tabulate
 
 #Constants
 STATS = ('Fuerza','Agilidad','Fe','Entendimiento','Bravura','Personalidad')
@@ -50,14 +51,19 @@ def showPjInfo(pjName):
 	if elegido not in ABNE:
 		#Shows the info of the key choosed
 		print(pj[elegido], )
-		time.sleep(3)
+		if isinstance(pj[elegido], dict): showTable(pj[elegido]) 
+		input()
 		#And then shows all the keys again
 		showPjInfo(pjName)
 	else:
 		#If 'ATRAS' send ORDEN
 		opciones(elegido, ORDEN[1], pjName)
 
-#Falta hace el nuevo
+# not working	
+def showTable(data):
+	print(tabulate(data	, headers='keys', tablefmt='github'))
+	
+
 def opciones(el, orden = None, pjName = None, esPJ = False):
 	print('orden', orden, 'pjName', pjName)
 	if el == 'ATRAS':
@@ -126,8 +132,9 @@ def menu():
 def showAndChoose(lista, optExit = None):
 	#lista = show this options (array)
 	#optExit = show x- exit, like that
-	
+	print(S)
 	#Join both arrays into one
+	lista_table = lista
 	if optExit != None:
 		lista = np.concatenate((np.array(optExit), np.array(lista)))
 		
@@ -137,7 +144,6 @@ def showAndChoose(lista, optExit = None):
 	while i < len(lista):
 		print(i,'-    ',lista[i])
 		i+=1
-		
 	# Choose one ~valid~
 	while True:
 		statUsa = input('Elija uno: ')	
@@ -163,7 +169,7 @@ def showStats():
 def showPjs(opt = None):
 	return showAndChoose(LISTPJ, opt)
 	
-# For adding more stuff to a PJ. Like Habilidades, Hechizos, Notas, etc
+# For adding more stuff to a PJ. Like Habilidades, Hechizos, Notas, etc. But asks USER first
 def askNew(pjName):
 	pj = getPj(pjName)
 	claves = getPjKeys(pjName)
@@ -187,7 +193,7 @@ def askNew(pjName):
 	if newlyAdded:
 		with open(PATH_FOLDER + pjName, 'w') as file:	
 			file.write(str(pj)) 
-            
+	opciones('ATRAS', ORDEN[2], pjName=pjName)   
       
 # example addNew([Nombre, Nivel, Stat que usa, Bonus Tirado], True)
 # Cycles the list[], asking for a value for each KEY, transforming the ARR into DICT. If the name parameter is True, ask for it.
@@ -199,44 +205,57 @@ def addNew(lista, nombre = False):
 	if nombre:
 		nombre = input('Ingrese un nombre: ')
 		res[nombre] = {}
-	res[nombre] = {i: input(f'Ingrese {i}: \n') for i in lista}
+		res[nombre] = {i: input(f'Ingrese {i}: \n') for i in lista}
+	else:
+		res = {i: input(f'Ingrese {i}: \n') for i in lista}
+	
 	return res
-
-
 
 def editPj(pjName):
 	pj = getPj(pjName)
 	claves = getPjKeys(pjName)
-	print('Que quieres modificar?')
-	primer = showAndChoose(claves, ['ATRAS'])
-	if primer == 'ATRAS':
-		opciones(primer, ORDEN[2], pjName)
-		
-	# If not dict, edit. If dict, ask again what
-	if not isinstance(pj[primer], dict):
-		pj[primer] = modificarString(pj[primer])
-	else:
-		primerList = list(pj[primer])
-		for i in primerList:
-			print(i, '  ', pj[primer][i], S )
-		segundo = showAndChoose(primerList)
-		
-		#Is a Dict inside a Dict? Loop again
-		if not isinstance(pj[primer][segundo], dict):
-			pj[primer][segundo] = modificarString(pj[primer][segundo])
+	while True:
+		print('Que quieres modificar?')
+		primer = showAndChoose(claves, ['ATRAS'])
+		if primer == 'ATRAS':
+			opciones(primer, ORDEN[2], pjName)
+			break  # Exit the loop if user chooses 'ATRAS'
+
+		# If not dict, edit. If dict, ask again what. You can only edit what's inside the dict, not the dict.
+		if not isinstance(pj[primer], dict):
+			pj[primer] = modificarString(pj[primer])
+			break
 		else:
-			segunList = list(pj[primer][segundo])
-			for i in segunList:
-				print(i, '  ', pj[primer][segundo][i], S )
-			tercer = showAndChoose(segunList)
-			
-			if not  (pj[primer][segundo][tercer], dict):
-				pj[primer][segundo][tercer] = modificarString(pj[primer][segundo][tercer])
-	
+			while True:
+				primerList = list(pj[primer])
+				for i in primerList:
+				        print(i, '  ', pj[primer][i], S)
+				segundo = showAndChoose(primerList)
+
+				# Is a Dict inside a Dict? Loop again
+				if not isinstance(pj[primer][segundo], dict):
+				        pj[primer][segundo] = modificarString(pj[primer][segundo])
+				        break
+				else:
+					while True:
+						segunList = list(pj[primer][segundo])
+						for i in segunList:
+							print(i, '  ', pj[primer][segundo][i], S)
+						tercer = showAndChoose(segunList)
+
+						if not isinstance(pj[primer][segundo][tercer], dict):
+							pj[primer][segundo][tercer] = modificarString(pj[primer][segundo][tercer])
+							print('aca')
+							break
+						else:
+							print("Cannot edit nested dictionaries further.")
+							break  # Ask for input again if user tries to edit nested dictionaries
+				break  # Exit the loop after editing the nested dictionary
+
 	with open(PATH_FOLDER + pjName, 'w') as file:
 		file.write(str(pj))
-	editPj(pjName)
-	#Mejora: Debe haber una forma de cliclar esto, llamando a la misma funcion recursivamente
+
+	opciones('ATRAS', ORDEN[2], pjName)
 
 def modificarString(info):
 	print('Modificando: ', info )
@@ -245,18 +264,14 @@ def modificarString(info):
 	print('Valor Nuevo: ', nuevoInput )
 	return nuevoInput
 		
-	
-	
 
 def addPj():
 	nombre = input('Elija el nombre del personaje: ')
 	#Set Dictionaries
 	personaje = {}
 	stats = {}
-	#Cambiarlas de Array a Dict?
 	habilidades = {}	
 	hechizos = {}
-	
 	notas = {}
 	notasEsp = {}
 	tecnicas = {}
@@ -264,32 +279,32 @@ def addPj():
 	path = PATH_FOLDER+nombre
 	#opciones = ['Habilidades','Tecnicas','Stats','Inventario']
 	#Create file with character name
-	with open(path, 'x') as file:
-		personaje['name'] = nombre
-		print('Vamos a crear paso a paso')
-		#Raza
-		personaje['raza'] = input('Ingrese la raza: ')
-		
-		#XP
-		print('Hay 2 tipos de XP, la usada y la disponible.')		
-		personaje['xp'] = addNew(['usada','disponible'])
-		
-		#Stats
-		stats = addNew(STATS)
-		
-		#Hechizos
-		if input('Hechizo? y/any \n').lower() == 'y': hechizos = addNew(INFO_CON_NOMBRE['hechizos'], True)
+	personaje['name'] = nombre
+	print('Vamos a crear paso a paso')
+	#Raza
+	personaje['raza'] = input('Ingrese la raza: ')
+	
+	#XP
+	print('Hay 2 tipos de XP, la usada y la disponible.')		
+	personaje['xp'] = addNew(['usada','disponible'])
+	
+	#Stats
+	stats = addNew(STATS)
+	
+	#Hechizos
+	if input('Hechizo? y/any \n').lower() == 'y': hechizos = addNew(INFO_CON_NOMBRE['hechizos'], True)
 
-		#Habilidades
-		if input('Habilidad? y/any \n').lower() == 'y': habilidades = addNew(INFO_CON_NOMBRE['habilidades'], True)
-		
-		personaje['habilidades'] = habilidades
-		personaje['hechizos'] = hechizos
-		personaje['stats'] = stats
-		personaje['notas'] = notas
-		personaje['notasEsp'] = notasEsp
-		personaje['tecnicas'] = tecnicas
-		personaje['ventajas'] = ventajas
+	#Habilidades
+	if input('Habilidad? y/any \n').lower() == 'y': habilidades = addNew(INFO_CON_NOMBRE['habilidades'], True)
+	
+	personaje['habilidades'] = habilidades
+	personaje['hechizos'] = hechizos
+	personaje['stats'] = stats
+	personaje['notas'] = notas
+	personaje['notasEsp'] = notasEsp
+	personaje['tecnicas'] = tecnicas
+	personaje['ventajas'] = ventajas
+	with open(path, 'x') as file:
 		file.write(str(personaje))
 		print(personaje, '\n\n')
 		
@@ -326,22 +341,27 @@ def refreshFileName(backToMenu = True):
 	if backToMenu: atras(ORDEN[0])
 
 """
-def refresh():
-	# Get the command to execute the script again
-	python_executable = sys.executable
-	script_path = sys.argv[0]
-	command = [python_executable, script_path]
+	def refresh():
+		# Get the command to execute the script again
+		python_executable = sys.executable
+		script_path = sys.argv[0]
+		command = [python_executable, script_path]
 
-	# Launch a new instance of the Python interpreter to run the script again
-	subprocess.Popen(command)
-
-	# Terminate the current script execution
-	sys.exit()
+		# Launch a new instance of the Python interpreter to run the script again
+		subprocess.Popen(command)
+		os.system("gnome-terminal --command 'python3 pk.py';bash -c 'exit' ")
+		# Terminate the current script execution
+		sys.exit()
 """
+# Two spaces and waits till input from USER
+def any():
+	print(S)
+	input('Press any key to continue')
+
 def start():
 	#Greetings
 	print('Bienvenido a PainKiller charactermancer by Facunchos')
-	time.sleep(2)
+	any()
 	menu()
 
 start()			
