@@ -1,15 +1,20 @@
 import os
 import numpy as np
 import time
-statsTuple = ('Fuerza','Agilidad','Fe','Entendimiento','Bravura','Personalidad')
+
+#Constants
+STATS = ('Fuerza','Agilidad','Fe','Entendimiento','Bravura','Personalidad')
 ANE = ['ATRAS','NUEVO','EDITAR']
 ABN = ['ATRAS','BORRAR','NUEVO']
 ABNE = ['ATRAS','BORRAR','NUEVO','EDITAR']
 ORDEN = ['MENU', 'SHOWPJS','PJ', 'EDITPJ' ]
-
-# https://www.geeksforgeeks.org/python-dictionary/
+INFO_CON_NOMBRE = {'habilidades':['Nivel', 'Stat', 'BonusTirado', 'BonusGuardado', 'Bonus', 'Descripcion'], 'hechizos':['Descripcion'], 'tecnicas':['Detalle'], 'ventajas':['Detalle']}
+INFO_SIN_NOMBRE = {'notas':['Detalle'], 'notasEsp':['Detalle'],}
 PATH_FOLDER = './pjs/'
 S = '\n'
+	
+
+# https://www.geeksforgeeks.org/python-dictionary/
 #All files from folder in array [], checking for pjs already created
 def checkFolder():
 	#Check for the folder. If exists, proceeds, else creates it with Auth from User. If user not want, cancel operation.
@@ -27,16 +32,8 @@ def checkForPjs():
 	#Show all the characters avairable
 	eleccion = showPjs(ABN)
 	
-	if eleccion == 'ATRAS':
-		opciones(eleccion, ORDEN[0])
-	elif eleccion == 'BORRAR':
-		seguro = input('ESTAS SEGURO? y/any \n')
-		if seguro.lower() == 'y':
-			delPj()
-		else:
-			checkForPjs()
-	elif eleccion == 'NUEVO':
-		addPj()
+	if eleccion in ABN:
+		opciones(eleccion, ORDEN[0], esPJ = True)
 	else:
 		print('Haz elejido a : ',eleccion)
 		showPjInfo(eleccion)
@@ -58,20 +55,17 @@ def showPjInfo(pjName):
 		opciones(elegido, ORDEN[1], pjName)
 
 #Falta hace el nuevo
-def opciones(el, orden = None, pjName = None,):
+def opciones(el, orden = None, pjName = None, esPJ = False):
 	print('orden', orden, 'pjName', pjName)
 	if el == 'ATRAS':
 		atras(orden, pjName)
 	elif el == 'BORRAR':
-		print('')
+		delPj() if esPJ else None
 	elif el == 'NUEVO':
-		askNew(pjName)
-		print('')
+		addPj() if esPJ else askNew(pjName)
 	elif el == 'EDITAR':
 		editPj(pjName)
-
 		
-
 def atras(orden, pjName = None):
 	if orden == ORDEN[0]:
 		menu()
@@ -81,7 +75,6 @@ def atras(orden, pjName = None):
 		showPjInfo(pjName)
 	elif orden == ORDEN[3]:
 		showPjInfo(pjName)
-	
 
 def getPj(pjName):
 	personaje = {}
@@ -95,7 +88,6 @@ def getPjKeys(pjName):
 	pj = getPj(pjName)		
 	return list(pj.keys())
 	
-
 #Print a link
 def link(uri, label=None):
 	if label is None: 
@@ -127,7 +119,6 @@ def menu():
 		print('Elija una opcion correcta')
 		menu()
 
-
 def showAndChoose(lista, optExit = None):
 	#lista = show this options (array)
 	#optExit = show x- exit, like that
@@ -149,6 +140,7 @@ def showAndChoose(lista, optExit = None):
 
 		if not statUsa.isdigit():  # Verificar si la entrada es un número
 		    print('Ingrese un número válido.')
+		    #The continue ejecutes the While again
 		    continue
 		
 		statUsa = int(statUsa)
@@ -161,84 +153,30 @@ def showAndChoose(lista, optExit = None):
 
 # Show all the stats, choose one and return the name
 def showStats():
-	return showAndChoose(statsTuple)
+	return showAndChoose(STATS)
 		
 # Show all the characters, choose one and return the name 
 def showPjs(opt = None):
 	return showAndChoose(listPjs, opt)
-
-# Add hechizo
-def addHechizo():
-	hechizo = {}
-	print('Agregando hechizo: Nombre, Descripcion ')
-	nombre = input('Nombre: ')
-	des = input('Agregue descripcion')
-	hechizo[nombre.lower()] = des.lower()
-	return hechizo;
 	
-def addHabilidad():
-	habilidad = {}  # Inicializar la variable habilidad
-
-	print('Agregando habilidad: Nombre, Nivel, Stat que usa, Bonus Tirado, Bonus Guardado, Bonus al total, Descripcion')
-	nombre = input('Nombre: ')
-	habilidad[nombre] = {}
-	habilidad[nombre]['nivel'] = input('Nivel: ')
-
-	# Show the Stats options
-	habilidad[nombre]['Stat'] = showStats()
-
-	# Add validations for integer inputs
-	while True:
-		try:
-			habilidad[nombre]['bonusTirado'] = int(input('Bonus de dados que se tiran (BonusTirado): '))
-			habilidad[nombre]['bonusGuardado'] = int(input('Bonus de dados que se guardan (BonusGuardado): '))
-			habilidad[nombre]['bonus'] = int(input('Bonus que se suma a la tirada total (Bonus): '))
-			break  # Break the loop if all inputs are valid integers
-		except ValueError:
-			print('Ingrese un número entero válido.')
-
-	habilidad[nombre]['des'] = input('Agregue descripción: ')
-	print(habilidad)
-	return habilidad
-	
-# example addNew([Nombre, Nivel, Stat que usa, Bonus Tirado])
-# Aca le mando un array de nombres que va ciclar el for. Se le pide un nombre inicial y una carga de datos
-"""
-def askNew(pjName, ):
-	
-	pj = getPj(pjName)
-	claves = getPjKeys(pjName)
-	delet = ['name','raza','xp']
-	
-	#generates a new list containing only those elements from clave that are not present in the delet
-	clave_filtered = [key for key in claves if key not in delet]
-
-	print('Que quieres agregar?: ')	
-	elegido = showAndChoose(clave_filtered, ['ATRAS'])
-	#opciones: ['habilidades', 'hechizos', 'stats', 'notas', 'notasEsp', 'tecnicas', 'ventajas']
-
-	if elegido == 'habilidades':
-		res = addNew(['Nivel', 'Stat','BonusTirado','BonusGuardado','Bonus', 'Descripcion'], True)
-	
-	with open(PATH_FOLDER + pjName, 'r') as file:
-		char = eval(file.read())
-		print('antes',char,S,S)
-		char[elegido][res[0]]
-		print('desp',char)
-"""		
+# For adding more stuff to a PJ. Like Habilidades, Hechizos, Notas, etc
 def askNew(pjName):
 	pj = getPj(pjName)
 	claves = getPjKeys(pjName)
 	delet = ['name', 'raza', 'xp']
 	newlyAdded = False
-	# Generate a new list containing only those elements from clave that are not present in the delet
+	# Generate a new list containing only those elements from clave that are n present in the delet
 	clave_filtered = [key for key in claves if key not in delet]
 
 	print('Que quieres agregar?: ')
 	elegido = showAndChoose(clave_filtered, ['ATRAS'])
-
-	if elegido == 'habilidades':
-		newlyAdded = addNew(['Nivel', 'Stat', 'BonusTirado', 'BonusGuardado', 'Bonus', 'Descripcion'], True)
+	
+	if elegido in INFO_CON_NOMBRE.keys():
+		newlyAdded = addNew(INFO_CON_NOMBRE[elegido], True)
+	elif elegido in INFO_SIN_NOMBRE.keys():
+		newlyAdded = addNew(INFO_SIN_NOMBRE[elegido], False)
+	else:
+		print('No se encontro que se quiere modificar')
 		
 	pj[elegido].update(newlyAdded)  # Update existing habilidades with the new one
 	
@@ -247,6 +185,9 @@ def askNew(pjName):
 			file.write(str(pj)) 
             
       
+# example addNew([Nombre, Nivel, Stat que usa, Bonus Tirado], True)
+# Cycles the list[], asking for a value for each KEY, transforming the ARR into DICT. If the name parameter is True, ask for it.
+# Name = False: (Return = {}); Name = True: (Return = Name:{})
 def addNew(lista, nombre = False):
 
 	#lista is a array of things to cicle
@@ -326,29 +267,17 @@ def addPj():
 		personaje['raza'] = input('Ingrese la raza: ')
 		
 		#XP
-		personaje['xp'] = {'usada':0,'disponible':0}
-		print('Hay 2 tipos de XP, la usada y la disponible.')
-		personaje['xp']['usada'] = input('Ingrese la xp usada: ')
-		personaje['xp']['disponible'] = input('Ingrese la xp disponible: ')
+		print('Hay 2 tipos de XP, la usada y la disponible.')		
+		personaje['xp'] = addNew(['usada','disponible'])
 		
 		#Stats
-		stats['Fuerza'] = input('Ingrese Fuerza: ')
-		stats['Agilidad'] = input('Ingrese Agilidad: ')
-		stats['Fe'] = input('Ingrese Fe: ')
-		stats['Inteligencia'] = input('Ingrese Inteligencia: ')
-		stats['Bravura'] = input('Ingrese Bravura: ')
-		stats['Personalidad'] = input('Ingrese Personalidad: ')
-	
-		#print('Los hechizos y Habilidades los agregas en el panel de Personaje!')
+		stats = addNew(STATS)
 		
 		#Hechizos
-		if input('Hechizo? y/any \n').lower() == 'y': hechizos = addHechizo()
-		#hechizos = addHechizo()
-		
+		if input('Hechizo? y/any \n').lower() == 'y': hechizos = addNew(INFO_CON_NOMBRE['hechizos'], True)
+
 		#Habilidades
-		if input('Habilidad? y/any \n').lower() == 'y': habilidades = addHabilidad()
-		#habilidades = addHabilidad()
-		
+		if input('Habilidad? y/any \n').lower() == 'y': habilidades = addNew(INFO_CON_NOMBRE['habilidades'], True)
 		
 		personaje['habilidades'] = habilidades
 		personaje['hechizos'] = hechizos
@@ -366,9 +295,13 @@ def addPj():
 		
 #Remove Character FILE
 def delPj():
+	seguro = input('ESTAS SEGURO? y/any \n')
+	if seguro.lower() != 'y':
+		checkForPjs()
+		
 	print('Cual deseas BORRAR?: ')
 	eleccion = showPjs(['ATRAS'])
-	if eleccion == 'ATRAS':
+	if eleccion in ABNE:
 		opciones(eleccion, ORDEN[1])	
 	else:
 		path = PATH_FOLDER + eleccion
