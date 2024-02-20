@@ -1,6 +1,8 @@
 import os
 import numpy as np
 import time
+import sys
+import subprocess
 
 #Constants
 STATS = ('Fuerza','Agilidad','Fe','Entendimiento','Bravura','Personalidad')
@@ -12,7 +14,6 @@ INFO_CON_NOMBRE = {'habilidades':['Nivel', 'Stat', 'BonusTirado', 'BonusGuardado
 INFO_SIN_NOMBRE = {'notas':['Detalle'], 'notasEsp':['Detalle'],}
 PATH_FOLDER = './pjs/'
 S = '\n'
-	
 
 # https://www.geeksforgeeks.org/python-dictionary/
 #All files from folder in array [], checking for pjs already created
@@ -24,11 +25,15 @@ def checkFolder():
 	return os.listdir(PATH_FOLDER)
 		
 #Array of files names in the pjs folder
-listPjs = checkFolder()
+def listPJ():
+	return checkFolder()
+
+LISTPJ = listPJ() 
 #If no pjs, create the first
 def checkForPjs():
 	#Check if the pjs folder is created. If not create one
 	checkFolder()
+	listPJ()
 	#Show all the characters avairable
 	eleccion = showPjs(ABN)
 	
@@ -37,8 +42,6 @@ def checkForPjs():
 	else:
 		print('Haz elejido a : ',eleccion)
 		showPjInfo(eleccion)
-		
-	# Hacer una funcion aparte para esto
 
 def showPjInfo(pjName):
 	pj = getPj(pjName)
@@ -103,8 +106,9 @@ def link(uri, label=None):
 def menu():
 	#Only 'Personajes' has more options, the rest is a link
 	links = {'Manual': 'https://drive.google.com/drive/u/0/folders/1cLwQJNBNFOMCxDp7t_fC4DHqz9kdyJUA', 'Hoja Excel':'https://docs.google.com/spreadsheets/d/1CA0mS23IgUdEZ-WnBhtf66BKSf_Mvkb83Yp-YzjG7uQ/edit#gid=2043668604', 'Creditos': 'Creado por Facundo Martinez (Facunchos) En 2024 \n Linkedin: \n https://www.linkedin.com/in/facunmartinez/ \n GitHub: \n https://github.com/Facunchos', 'Cafesito': 'Hacerme cuenta de Cafesito!',  }
-	inicio = ['Personajes', 'Manual' ,'Hoja Excel','Creditos','Cafesito', 'Refresh', 'Refresh File names']
+#	inicio = ['Personajes', 'Manual' ,'Hoja Excel','Creditos','Cafesito', 'Refresh', 'Refresh File names']
 	
+	inicio = ['Personajes', 'Manual' ,'Hoja Excel','Creditos','Cafesito', 'Refresh File names']
 	elegido = showAndChoose(inicio)
 	if elegido in links.keys():
 		print(links[elegido])
@@ -157,7 +161,7 @@ def showStats():
 		
 # Show all the characters, choose one and return the name 
 def showPjs(opt = None):
-	return showAndChoose(listPjs, opt)
+	return showAndChoose(LISTPJ, opt)
 	
 # For adding more stuff to a PJ. Like Habilidades, Hechizos, Notas, etc
 def askNew(pjName):
@@ -312,24 +316,32 @@ def delPj():
 			print("The file does not exist") 
 	start()
 		
-def refreshFileName():
+def refreshFileName(backToMenu = True):
 	pjs = os.listdir(PATH_FOLDER)
 	for i in pjs:
 		name = getPj(i)['name']
 		if i != name:
 			print(f'Nombre de archivo actualizado. De {i} a {name}')
 			os.rename(PATH_FOLDER+i, PATH_FOLDER+name)
-	#atras(ORDEN[0])
-	
+	if backToMenu: atras(ORDEN[0])
+
+"""
 def refresh():
-	#os.system("gnome-terminal -e 'bash -c \"python3 pk.py; bash\" '")
-	refreshFileName()
-	os.system("gnome-terminal --command 'python3 pk.py';bash -c 'exit' ")
-	
-			
+	# Get the command to execute the script again
+	python_executable = sys.executable
+	script_path = sys.argv[0]
+	command = [python_executable, script_path]
+
+	# Launch a new instance of the Python interpreter to run the script again
+	subprocess.Popen(command)
+
+	# Terminate the current script execution
+	sys.exit()
+"""
 def start():
 	#Greetings
 	print('Bienvenido a PainKiller charactermancer by Facunchos')
+	time.sleep(2)
 	menu()
 
 start()			
