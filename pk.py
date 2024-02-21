@@ -43,6 +43,7 @@ def checkForPjs():
 	else:
 		print('Haz elejido a : ',eleccion)
 		showPjInfo(eleccion)
+
 def showPjInfo(pjName):
 	pj = getPj(pjName)
 	claves = getPjKeys(pjName)
@@ -175,7 +176,7 @@ def showStats():
 		
 # Show all the characters, choose one and return the name 
 def showPjs(opt = None):
-	return showAndChoose(LISTPJ, opt)
+	return showAndChoose(LISTPJ, opt)	
 	
 # For adding more stuff to a PJ. Like Habilidades, Hechizos, Notas, etc. But asks USER first
 def askNew(pjName):
@@ -205,7 +206,9 @@ def askNew(pjName):
       
 # example addNew([Nombre, Nivel, Stat que usa, Bonus Tirado], True)
 # Cycles the list[], asking for a value for each KEY, transforming the ARR into DICT. If the name parameter is True, ask for it.
-# Name = False: (Return = {}); Name = True: (Return = Name:{})
+# Name = False: (Return = {}); Name = True: (Return = Name:{})	
+
+# Me rompe añadir habildad nueva
 
 def addNew(lista, nombre = False):
 
@@ -386,10 +389,10 @@ def show_table_in_new_terminal(data):
                 table = tabulate(table_data, headers=headers, tablefmt='grid')
 
                 # Open a new terminal window and print the table there
-                subprocess.run(['gnome-terminal', '--', 'bash', '-c', f'echo "{table}" && read -p "Press any key to exit..."'])
 
             else:
                 print(f"Key: {key}, Value: {value}")
+        subprocess.run(['gnome-terminal', '--', 'bash', '-c', f'echo "{table}" && read -p "Press any key to exit..."'])
     else:
         print("Invalid data format. Expected dictionary.")
 

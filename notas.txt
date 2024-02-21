@@ -79,12 +79,14 @@ Para hacer:
 		1 - Aren
 			A - Atras OK
 			N - Nuevo OK
-			B - Borrar
+			B - Borrar En proceso
 			E - Editar OK
+			0 - VIDA / ENERGIA / MANA ? 
 			1 - Habilidades
 			2 - Hechizos
 			3 - Notas
-				ACA SE MUESTRA UNA TABLA CON LO QUE HAY, ALGO ASI:
+				SE ABRE EN UNA TERMINAL APARTE SI EL USER LO QUIERE OK
+				ACA SE MUESTRA UNA TABLA CON LO QUE HAY, ALGO ASI:OK
 				
 				Nombre: Nombre hab
 				+---------------+---------+
