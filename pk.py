@@ -59,10 +59,18 @@ def showPjInfo(pjName):
 		#If 'ATRAS' send ORDEN
 		opciones(elegido, ORDEN[1], pjName)
 
-# not working	
+# Show the info in a table. If the info value is a DICT it will make a table.
 def showTable(data):
-	print(tabulate(data	, headers='keys', tablefmt='github'))
-	
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if isinstance(value, dict):
+                table_data = [(str(k), str(v)) for k, v in value.items()]
+                table = tabulate(table_data, headers=[key, 'Value'], tablefmt='grid')
+                print(table)
+            else:
+                print(f"Key: {key}, Value: {value}")
+    else:
+        print("Invalid data format. Expected dictionary.")
 
 def opciones(el, orden = None, pjName = None, esPJ = False):
 	print('orden', orden, 'pjName', pjName)
@@ -198,17 +206,28 @@ def askNew(pjName):
 # example addNew([Nombre, Nivel, Stat que usa, Bonus Tirado], True)
 # Cycles the list[], asking for a value for each KEY, transforming the ARR into DICT. If the name parameter is True, ask for it.
 # Name = False: (Return = {}); Name = True: (Return = Name:{})
+
 def addNew(lista, nombre = False):
 
 	#lista is a array of things to cicle
 	res = {}
+	dic = {}
 	if nombre:
 		nombre = input('Ingrese un nombre: ')
 		res[nombre] = {}
-		res[nombre] = {i: input(f'Ingrese {i}: \n') for i in lista}
+		#res[nombre] = {i: input(f'Ingrese {i}: \n') for i in lista}
+		# Dont know how to optimize any further :C. But it works, idk how tho
+		for i in lista:
+			if i == 'Stat':
+				res[nombre][i] = showAndChoose(STATS)
+			else:
+				res[nombre][i] = input(f'Ingrese {i}: \n')
 	else:
-		res = {i: input(f'Ingrese {i}: \n') for i in lista}
-	
+		for i in lista:
+			if i == 'Stat':
+				res[i] = showAndChoose(STATS)
+			else:
+				res[i] = input(f'Ingrese {i}: \n')
 	return res
 
 def editPj(pjName):
@@ -245,7 +264,6 @@ def editPj(pjName):
 
 						if not isinstance(pj[primer][segundo][tercer], dict):
 							pj[primer][segundo][tercer] = modificarString(pj[primer][segundo][tercer])
-							print('aca')
 							break
 						else:
 							print("Cannot edit nested dictionaries further.")
@@ -258,10 +276,10 @@ def editPj(pjName):
 	opciones('ATRAS', ORDEN[2], pjName)
 
 def modificarString(info):
-	print('Modificando: ', info )
+	print('Modificando: ', info, S )
 	nuevoInput = input('Ingrese nuevo valor: \n')
-	print('Valor anterior: ', info)			  	
-	print('Valor Nuevo: ', nuevoInput )
+	print('Valor anterior: ', info, S)			  	
+	print('Valor Nuevo: ', nuevoInput, S )
 	return nuevoInput
 		
 

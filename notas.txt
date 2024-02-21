@@ -67,3 +67,46 @@ Para hacer:
 	
 	
 Crear opcion para mostrar
+
+Nuevo modelo:
+Para hacer:
+	Inicio del programa dice 'Bienvenido a PainKiller charactermancer by Facunchos'
+	1 - Personajes
+		(Aca caen una lista de los personajes):
+		A - Atras (Te lleva al inicio) OK
+		B - Borrar OK
+		N - Nuevo OK
+		1 - Aren
+			A - Atras OK
+			N - Nuevo OK
+			B - Borrar
+			E - Editar OK
+			1 - Habilidades
+			2 - Hechizos
+			3 - Notas
+				ACA SE MUESTRA UNA TABLA CON LO QUE HAY, ALGO ASI:
+				
+				Nombre: Nombre hab
+				+---------------+---------+
+				| Nombre hab    |   Value |
+				+===============+=========+
+				| Nivel         |      12 |
+				+---------------+---------+
+				| Stat          |   FUERZA|
+				+---------------+---------+
+				| BonusTirado   |       1 |
+				+---------------+---------+
+				| BonusGuardado |       4 |
+				+---------------+---------+
+				| Bonus         |       1 |
+				+---------------+---------+
+				| Descripcion   |       2 |
+				+---------------+---------+
+
+			
+	2 - Manual ( Te lleva a un link )  OK
+	3 - Hoja Excel ( Te lleva a un link ) OK
+	4 - Creditos ( Te lleva a un link ) OK
+	5 - Cafesito? ( Te lleva a un link ) OK (Crear cafesito)
+	
+
