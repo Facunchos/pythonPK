@@ -43,16 +43,15 @@ def checkForPjs():
 	else:
 		print('Haz elejido a : ',eleccion)
 		showPjInfo(eleccion)
-
 def showPjInfo(pjName):
 	pj = getPj(pjName)
 	claves = getPjKeys(pjName)
-	elegido = showAndChoose(claves, ANE)
+	elegido = showAndChoose(claves, ABNE)
 	if elegido not in ABNE:
 		#Shows the info of the key choosed
 		print(pj[elegido], )
 		if isinstance(pj[elegido], dict): showTable(pj[elegido]) 
-		input()
+		if input('Open in new terminal? y/any \n').lower() == 'y': show_table_in_new_terminal(pj[elegido])
 		#And then shows all the keys again
 		showPjInfo(pjName)
 	else:
@@ -71,6 +70,7 @@ def showTable(data):
                 print(f"Key: {key}, Value: {value}")
     else:
         print("Invalid data format. Expected dictionary.")
+	
 
 def opciones(el, orden = None, pjName = None, esPJ = False):
 	print('orden', orden, 'pjName', pjName)
@@ -230,6 +230,7 @@ def addNew(lista, nombre = False):
 				res[i] = input(f'Ingrese {i}: \n')
 	return res
 
+
 def editPj(pjName):
 	pj = getPj(pjName)
 	claves = getPjKeys(pjName)
@@ -272,15 +273,15 @@ def editPj(pjName):
 
 	with open(PATH_FOLDER + pjName, 'w') as file:
 		file.write(str(pj))
-
-	opciones('ATRAS', ORDEN[2], pjName)
+	refreshFileName(False)
+	opciones('ATRAS', ORDEN[2], pj['name'])
 
 def modificarString(info):
 	print('Modificando: ', info, S )
 	nuevoInput = input('Ingrese nuevo valor: \n')
 	print('Valor anterior: ', info, S)			  	
 	print('Valor Nuevo: ', nuevoInput, S )
-	return nuevoInput
+	return nuevoInput	
 		
 
 def addPj():
@@ -375,6 +376,24 @@ def refreshFileName(backToMenu = True):
 def any():
 	print(S)
 	input('Press any key to continue')
+
+def show_table_in_new_terminal(data):
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if isinstance(value, dict):
+                table_data = [(str(key), str(k), str(v)) for k, v in value.items()]
+                headers = ['Key', 'Descripcion']
+                table = tabulate(table_data, headers=headers, tablefmt='grid')
+
+                # Open a new terminal window and print the table there
+                subprocess.run(['gnome-terminal', '--', 'bash', '-c', f'echo "{table}" && read -p "Press any key to exit..."'])
+
+            else:
+                print(f"Key: {key}, Value: {value}")
+    else:
+        print("Invalid data format. Expected dictionary.")
+
+
 
 def start():
 	#Greetings
