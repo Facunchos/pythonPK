@@ -267,7 +267,7 @@ def addNew(lista, nombre=False):
 
     # lista is a array of things to cicle
     res = {}
-    #dic = {}
+    dic = {}
     if nombre:
         nombre = input("Ingrese un nombre: ")
         res[nombre] = {}
